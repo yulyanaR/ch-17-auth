@@ -2,8 +2,8 @@ import Head from 'next/head'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Inter } from 'next/font/google'
+import { withPageAuthRequired } from '@auth0/nextjs-auth0';
 import styles from '@/styles/Home.module.css'
-
 const inter = Inter({ subsets: ['latin'] })
 
 export default function Private() {
@@ -24,3 +24,5 @@ export default function Private() {
     </>
   )
 }
+
+export const getServerSideProps = withPageAuthRequired();
