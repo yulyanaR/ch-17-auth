@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Head from "next/head";
 import Link from "next/link";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import styles from "@/styles/Home.module.css";
 
 import { callPrivate, callPublic, callRBAC } from "../utils/api";
@@ -9,6 +10,7 @@ export default function Home() {
   const [publicResponse, setPublicResponse] = useState(null);
   const [privateResponse, setPrivateResponse] = useState(null);
   const [RBACResponse, setRBACResponse] = useState(null);
+  const { user, error, isLoading } = useUser();
 
   useEffect(() => {
     (async () => {
@@ -22,6 +24,9 @@ export default function Home() {
       setRBACResponse(rb.message);
     })();
   }, []);
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>{error.message}</div>;
 
   return (
     <>
@@ -37,11 +42,26 @@ export default function Home() {
         </nav>
       </header>
       <main className={styles.main}>
+        {user && (
+          <div>
+            <img src={user.picture} alt={user.name} />
+            <h2>{user.name}</h2>
+            <p>{user.email}</p>
+          </div>
+        )}
         <section className={styles.description}>
           <h1 className={styles.heading}>Homepage</h1>
           <p>Public API Response: {publicResponse}</p>
           <p>Private API Response: {privateResponse}</p>
           <p>RBAC API Response: {RBACResponse}</p>
+          <a href="/api/auth/login" className="button">
+            Login
+          </a>
+          {user && (
+            <a href="/api/auth/logout" className="button">
+              Logout
+            </a>
+          )}
         </section>
       </main>
     </>
